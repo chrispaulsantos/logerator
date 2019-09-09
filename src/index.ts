@@ -1,14 +1,10 @@
-export function log(options: Options = { static: false }): (target: any) => void {
-    options = {
-        static: false,
-        ...options
-    };
+export function log(options?: Options): (target: any) => void {
+    const defaultOptions: Options = { loggerFn: console.log };
 
-    if (!options.loggerFn) {
-        options.loggerFn = console.log;
+    if (options) {
+        defaultOptions.static = options.static || false;
+        defaultOptions.loggerFn = options.loggerFn || console.log;
     }
-
-    options.loggerFn('Hello');
 
     return function(target): void {
         let prototype = target.prototype;
@@ -19,16 +15,18 @@ export function log(options: Options = { static: false }): (target: any) => void
         list.forEach(key => {
             let fn = prototype[key];
             if (fn && isMethod(fn)) {
-                prototype[key] = wrap(fn, options.loggerFn);
+                prototype[key] = wrap(fn, defaultOptions.loggerFn);
             }
         });
     };
 }
 
 export interface Options {
-    loggerFn?: (msg: string) => void;
+    loggerFn?: LogFunction;
     static?: boolean;
 }
+
+type LogFunction = (message: string) => void;
 
 function isMethod(fn: any): any {
     if (typeof fn === 'function') {
@@ -37,7 +35,7 @@ function isMethod(fn: any): any {
     return false;
 }
 
-function wrap(fn: any, logFn: any): Function {
+function wrap(fn: any, logFn: LogFunction): Function {
     return function(...args: any[]): any {
         let instance = this;
         let wrapper = function(...args: any[]): any {
@@ -53,12 +51,12 @@ function wrap(fn: any, logFn: any): Function {
 
                         return val;
                     })
-                    .catch(reason => {
+                    .catch(e => {
                         logFn(`---- REJECT ----`);
-                        logFn(reason);
+                        logFn(e);
                         logFn(`END: ${fn.name}()`);
 
-                        return Promise.reject(reason);
+                        return Promise.reject(e);
                     });
             }
 
