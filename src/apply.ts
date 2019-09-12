@@ -1,7 +1,14 @@
-import { LogFunction } from './types';
+import { DEFAULT_OPTIONS } from './options';
+import { Options } from './types';
 
-export function apply(fn: any, log: LogFunction): Function {
+export function apply(fn: any, options: Options): Function {
     return function(...args: any[]): any {
+        // Since decorators are applied at declaration, we need to 
+        // have this here, otherwise options.logFunction will be console.log
+        // and even though we call configure(), it's possible for the declaration
+        // to occur before configure is called
+        const log = options.logFunction || DEFAULT_OPTIONS.logFunction;
+
         log(`START ${fn.name}()`);
         let result = fn.apply(this, args);
 
