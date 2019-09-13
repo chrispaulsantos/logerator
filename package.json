@@ -1,7 +1,7 @@
 {
   "name": "logerator",
   "version": "1.0.0",
-  "description": "A typescript decorator to log prototype and static class method calls",
+  "description": "A typescript decorator to log class method calls",
   "main": "lib/index.js",
   "types": "lib/index",
   "scripts": {
@@ -14,7 +14,7 @@
     "logger",
     "decorator"
   ],
-  "author": "chrispaulsantos",
+  "author": "Chris Santos",
   "repository": "chrispaulsantos/logerator",
   "license": "MIT",
   "devDependencies": {
