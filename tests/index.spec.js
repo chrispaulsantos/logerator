@@ -1,6 +1,12 @@
 const logerator = require('../lib');
 
-describe('logerator.log', () => {
+let consoleOutput = '';
+let mockConsoleLog = function(msg) {
+    consoleOutput += `${msg}\n`;
+};
+const decorator = logerator.log({ logFunction: mockConsoleLog });
+
+describe('logerator.log.class', () => {
     class TestClass {
         testFunction() {}
         testFunctionWithInput(val) {
@@ -18,11 +24,6 @@ describe('logerator.log', () => {
      * @type {TestClass}
      */
     let testClass;
-    let consoleOutput = '';
-    let mockConsoleLog = function(msg) {
-        consoleOutput += `${msg}\n`;
-    };
-    const decorator = logerator.log({ logFunction: mockConsoleLog });
 
     beforeEach(() => {
         consoleOutput = '';
@@ -69,6 +70,16 @@ describe('logerator.log', () => {
             expect(consoleOutput).toBe(expected);
             done();
         });
+    });
+});
+
+describe('logerator.log.method', () => {
+    it('something', () => {
+        const fn = function() {};
+        decorator(fn);
+
+        fn();
+        expect(true).toBeTruthy();
     });
 });
 

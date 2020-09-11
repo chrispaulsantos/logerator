@@ -18,6 +18,25 @@ export function log(options?: Options): (target: any) => void {
         }
     }
 
+    return function() {
+        const args = arguments;
+        console.log(arguments);
+        if (args.length === 1) {
+            logClass(opts).apply(null, args);
+            return;
+        }
+        if (args[2] || args[2] === 0) {
+            switch (typeof args[2]) {
+                case 'object': {
+                    logMethod(opts).apply(null, args);
+                    return;
+                }
+            }
+        }
+    };
+}
+
+const logClass = function(opts: Options) {
     return function(target): void {
         let prototype = target.prototype;
 
@@ -35,4 +54,10 @@ export function log(options?: Options): (target: any) => void {
             }
         });
     };
-}
+};
+
+const logMethod = function(opts: Options) {
+    return function(target, key, descriptor) {
+        console.log(target);
+    };
+};
